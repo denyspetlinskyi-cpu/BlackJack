@@ -2,5 +2,5 @@
   <Configurations>
     <Platform Name="x64" />
   </Configurations>
-  <Project Path="BlackJack.vcxproj" />
+  <Project Path="BlackJack.vcxproj" Id="08d1e5ed-656a-4d75-979e-8dcc9953ab4f" />
 </Solution>

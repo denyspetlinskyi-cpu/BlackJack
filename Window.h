@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtWidgets/QMainWindow>
+#include <QPixmap>
 #include "ui_Window.h"
 
 class Window : public QMainWindow
