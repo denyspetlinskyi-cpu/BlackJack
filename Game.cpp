@@ -13,7 +13,9 @@ void Game::shuffleDeck(){}
 
 void Game::DealInitialHands(){
 	selectedHand = 0;
+	canPerfectPair = true;
 	canDoubleDown = true;
+
 	DealerHand.clear();
 	DealerHand.push_back(deck.back());
 	deck.pop_back();
@@ -82,46 +84,66 @@ int Game::GetSelectedHand()
 
 void Game::stand(){
 	canDoubleDown = false;
+	canPerfectPair = false;
 	selectedHand++;
 }
 
 void Game::hit(){
 	canDoubleDown = false;
+	canPerfectPair = false;
 	PlayerHands[selectedHand].push_back(deck.back());
 	deck.pop_back();
 }
 
 void Game::doubleDown()
 {
-	canDoubleDown = false;
-	if (currentBet > money) {
-		return;
-	}
-	else {
-		money -= currentBet;
-		bets[selectedHand] += currentBet;
-		hit();
-		stand();
+	if (canDoubleDown) {
+		canDoubleDown = false;
+		canPerfectPair = false;
+		if (currentBet > money) {
+			return;
+		}
+		else {
+			money -= currentBet;
+			bets[selectedHand] += currentBet;
+			hit();
+			stand();
+		}
 	}
 }
 
-void Game::split(){
-	if (money >= bets[selectedHand]) {
-		canDoubleDown = false;
-		if (PlayerHands[selectedHand].size() == 2 && PlayerHands[selectedHand][0].value == PlayerHands[selectedHand][1].value) {
-			std::vector<std::vector<Card>> temp;
-			for (int i = 0; i < PlayerHands.size(); i++) {
-				if (i == selectedHand) {
-					temp.push_back({ PlayerHands[i][0] });
-					temp.push_back({ PlayerHands[i][1] });
+void Game::split(bool PerfectPairsSideBet){
+	if (PerfectPairsSideBet) {
+		if (money >= bets[selectedHand]) {
+			if (PlayerHands[selectedHand].size() == 2 && PlayerHands[selectedHand][0].value == PlayerHands[selectedHand][1].value) {
+				PerfectPairsSideBet = true;
+				canDoubleDown = false;
+				std::vector<std::vector<Card>> temp;
+				for (int i = 0; i < PlayerHands.size(); i++) {
+					if (i == selectedHand) {
+						temp.push_back({ PlayerHands[i][0] });
+						temp.push_back({ PlayerHands[i][1] });
+					}
+					else {
+						temp.push_back(PlayerHands[i]);
+					}
 				}
-				else {
-					temp.push_back(PlayerHands[i]);
-				}
+				bets.push_back(bets[selectedHand]);
+				money -= bets[selectedHand];
+				PlayerHands = temp;
 			}
-			bets.push_back(bets[selectedHand]);
-			money -= bets[selectedHand];
-			PlayerHands = temp;
+		}
+	}
+	else {
+		if (money >= bets[selectedHand] && canPerfectPair) {
+			if (PlayerHands[selectedHand].size() == 2 && PlayerHands[selectedHand][0].value == PlayerHands[selectedHand][1].value) {
+				bets.push_back(bets[selectedHand]);
+				money -= bets[selectedHand];
+				PerfectPairsSideBet = false;
+				stand();
+				canDoubleDown = false;
+				canPerfectPair = false;
+			}
 		}
 	}
 }
@@ -155,9 +177,10 @@ bool Game::DealerTakeCards(){
 	return false;
 }
 
-void Game::CalculateResults()
+void Game::CalculateResults(bool NaturalBlackjackpayout32)
 {
 	std::vector<std::vector<int>> playerHandsValues = GetHandsValue();
+	std::vector<std::vector<Card>> playerHands = GetPlayerHands();
 	int dealerValue = GetDealerHandValue();
 	for (int i = 0; i < playerHandsValues.size(); i++) {
 		int maxPlayerValue = playerHandsValues[i][0];
@@ -167,7 +190,29 @@ void Game::CalculateResults()
 			}
 		}
 
+
+		if (bets.size() > playerHandsValues.size() && !PerfectPairsSideBet && maxPlayerValue > dealerValue) {
+			money += bets[i] * 10;
+		}
+
+
+
+
+
+
+		
 		if (maxPlayerValue > 21) {
+			continue;
+		}
+		if (!PerfectPairsSideBet && maxPlayerValue <= dealerValue) {
+			continue;
+		}
+		if (maxPlayerValue == 21 && playerHands[i].size() == 2 && dealerValue != 21 && NaturalBlackjackpayout32) {
+			money += bets[i] * 1.5;
+			continue;
+		}
+		if (maxPlayerValue == 21 && playerHands[i].size() == 2 && dealerValue == 21 && NaturalBlackjackpayout32) {
+			money += bets[i];
 			continue;
 		}
 		if (dealerValue > 21 || maxPlayerValue > dealerValue) {
@@ -177,6 +222,7 @@ void Game::CalculateResults()
 			money += bets[i];
 		}
 	}
+	bets.clear();
 }
 
 int Game::GetBalance()

@@ -9,6 +9,9 @@ private:
 	Window window;
 	Game game;
 public:
+	bool IsDoubleDownAllowed = false;
+	bool NaturalBlackjackpayout32 = false;
+	bool PerfectPairsSideBet = false;
 	BlackJack();
 	~BlackJack();
 	void startGame();

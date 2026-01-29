@@ -8,10 +8,12 @@ public:
 	int currentBet = 0;
 	std::vector<int> bets;
 	int selectedHand = 0;
-	std::vector<Card> deck{ {Hearts,Two}, {Hearts,Three}, {Hearts,Four}, {Hearts,Five}, {Hearts,Six}, {Hearts,Seven}, {Hearts,Eight}, {Hearts,Nine}, {Hearts,Ten}, {Hearts,Jack}, {Hearts,Queen}, {Hearts,King}, {Hearts,Ace}, {Diamonds,Two}, {Diamonds,Three}, {Diamonds,Four}, {Diamonds,Five}, {Diamonds,Six}, {Diamonds,Seven}, {Diamonds,Eight}, {Diamonds,Nine}, {Diamonds,Ten}, {Diamonds,Jack}, {Diamonds,Queen}, {Diamonds,King}, {Diamonds,Ace},  {Clubs,Two}, {Clubs,Three}, {Clubs,Four}, {Clubs,Five}, {Clubs,Six}, {Clubs,Seven}, {Clubs,Eight}, {Clubs,Nine}, {Clubs,Ten}, {Clubs,Jack}, {Clubs,Queen}, {Clubs,King}, {Clubs,Ace}, {Spades,Two}, {Spades,Three}, {Spades,Four}, {Spades,Five}, {Spades,Six}, {Spades,Seven}, {Spades,Eight}, {Spades,Nine}, {Spades,Ten}, {Spades,Jack}, {Spades,Queen}, {Spades,King}, {Spades,Ace}, { Hearts,Two }, {Hearts,Two}, {Hearts,Two}, {Hearts,Two}, {Hearts,Two}, };
+	std::vector<Card> deck{ {Hearts,Two}, {Hearts,Three}, {Hearts,Four}, {Hearts,Five}, {Hearts,Six}, {Hearts,Seven}, {Hearts,Eight}, {Hearts,Nine}, {Hearts,Ten}, {Hearts,Jack}, {Hearts,Queen}, {Hearts,King}, {Hearts,Ace}, {Diamonds,Two}, {Diamonds,Three}, {Diamonds,Four}, {Diamonds,Five}, {Diamonds,Six}, {Diamonds,Seven}, {Diamonds,Eight}, {Diamonds,Nine}, {Diamonds,Ten}, {Diamonds,Jack}, {Diamonds,Queen}, {Diamonds,King}, {Diamonds,Ace},  {Clubs,Two}, {Clubs,Three}, {Clubs,Four}, {Clubs,Five}, {Clubs,Six}, {Clubs,Seven}, {Clubs,Eight}, {Clubs,Nine}, {Clubs,Ten}, {Clubs,Jack}, {Clubs,Queen}, {Clubs,King}, {Clubs,Ace}, {Spades,Two}, {Spades,Three}, {Spades,Four}, {Spades,Five}, {Spades,Six}, {Spades,Seven}, {Spades,Eight}, {Spades,Nine}, {Spades,Ten}, {Spades,Jack}, {Spades,Queen}, {Spades,King}, {Spades,Ace}, { Hearts,Two }, {Hearts,King}, {Hearts,King}, {Hearts,Two}, {Hearts,Two}, };
 	std::vector<Card> DealerHand;
 	std::vector<std::vector<Card>> PlayerHands;
 	bool canDoubleDown = true;
+	bool canPerfectPair = true;
+	bool PerfectPairsSideBet;
 
 	Game();
 	~Game();
@@ -26,10 +28,10 @@ public:
 	void stand();
 	void hit();
 	void doubleDown();
-	void split();
+	void split(bool PerfectPairsSideBet);
 	int GetDealerHandValue();
 	bool DealerTakeCards();
-	void CalculateResults();
+	void CalculateResults(bool NaturalBlackjackpayout32);
 	int GetBalance();
 };
 

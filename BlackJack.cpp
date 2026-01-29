@@ -28,8 +28,7 @@ void BlackJack::startGame()
 	}
 }
 
-void BlackJack::roundLoop()
-{
+void BlackJack::roundLoop(){
 	ShowBalance(game.GetBalance());
 	int bet = InputBetAmount();
 	if (game.GetBet(bet)) {
@@ -53,10 +52,11 @@ void BlackJack::roundLoop()
 					game.stand();
 					break;
 				case 3:
-					game.doubleDown();
+					if(IsDoubleDownAllowed)
+						game.doubleDown();
 					break;
 				case 4:
-					game.split();
+					game.split(PerfectPairsSideBet);
 					break;
 			}
 			SelectedHand = game.GetSelectedHand();
@@ -68,7 +68,7 @@ void BlackJack::roundLoop()
 			std::cout << game.GetDealerHandValue() << std::endl;
 		} while (game.DealerTakeCards());
 
-		game.CalculateResults();
+		game.CalculateResults(NaturalBlackjackpayout32);
 	}
 }
 
@@ -83,10 +83,6 @@ int BlackJack::InputAction()
 {
 	int action;
 	std::cin >> action;
-	if (!game.canDoubleDown && action == 3) {
-		std::cout << "You can't double down!" << std::endl;
-		return InputAction();
-	}
 	return action;
 }
 
