@@ -22,7 +22,7 @@ BlackJack::~BlackJack()
 void BlackJack::startGame()
 {
 	//window.show();
-	game.shuffleDeck();
+	SetSeed();
 	while(game.money > 0) {
 		roundLoop();
 	}
@@ -120,4 +120,16 @@ void BlackJack::ShowPlayerHands(std::vector<std::vector<Card>> PlayerHands, int 
 
 void BlackJack::ShowBalance(int balance){
 	std::cout << "Your money: " << balance << std::endl;
+}
+
+void BlackJack::SetSeed()
+{
+	int typeOfSeed;
+	std::cin >> typeOfSeed;
+	if (typeOfSeed == 0) {
+		srand(time(0));
+		game.SetSeed(rand());
+	}
+	else
+		game.SetSeed(typeOfSeed);
 }

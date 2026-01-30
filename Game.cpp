@@ -1,7 +1,14 @@
 #include "Game.h"
 #include <iostream>
+#include <algorithm>
+#include <random>
 Game::Game(){}
 Game::~Game(){}
+
+void Game::SetSeed(int newSeed)
+{
+	seed = newSeed;
+}
 
 const int rank[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1};
 
@@ -9,12 +16,17 @@ int Game::SizeOfDeck(){
 	return this->deck.size();
 }
 
-void Game::shuffleDeck(){}
+void Game::shuffleDeck(){
+	std::shuffle(deck.begin(), deck.end(), std::default_random_engine(seed));
+	seed++;
+}
 
 void Game::DealInitialHands(){
 	selectedHand = 0;
 	canPerfectPair = true;
 	canDoubleDown = true;
+	deck = deckStandart;
+	shuffleDeck();
 
 	DealerHand.clear();
 	DealerHand.push_back(deck.back());
@@ -137,10 +149,9 @@ void Game::split(bool PerfectPairsSideBet){
 	else {
 		if (money >= bets[selectedHand] && canPerfectPair) {
 			if (PlayerHands[selectedHand].size() == 2 && PlayerHands[selectedHand][0].value == PlayerHands[selectedHand][1].value) {
-				bets.push_back(bets[selectedHand]);
-				money -= bets[selectedHand];
+				//bets.push_back(bets[selectedHand]);
 				PerfectPairsSideBet = false;
-				stand();
+				//stand();
 				canDoubleDown = false;
 				canPerfectPair = false;
 			}
@@ -191,14 +202,9 @@ void Game::CalculateResults(bool NaturalBlackjackpayout32)
 		}
 
 
-		if (bets.size() > playerHandsValues.size() && !PerfectPairsSideBet && maxPlayerValue > dealerValue) {
+		if (!PerfectPairsSideBet && maxPlayerValue > dealerValue) {
 			money += bets[i] * 10;
 		}
-
-
-
-
-
 
 		
 		if (maxPlayerValue > 21) {

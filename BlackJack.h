@@ -3,15 +3,17 @@
 #include "Window.h"
 #include "Game.h"
 #include <thread>
+#include <algorithm>
+#include <random>
 class BlackJack
 {
 private:
 	Window window;
 	Game game;
 public:
-	bool IsDoubleDownAllowed = false;
+	bool IsDoubleDownAllowed = true;
 	bool NaturalBlackjackpayout32 = false;
-	bool PerfectPairsSideBet = false;
+	bool PerfectPairsSideBet = true;
 	BlackJack();
 	~BlackJack();
 	void startGame();
@@ -21,5 +23,6 @@ public:
 	void ShowDealerHand(std::vector<Card> DealerHand, bool HideSecondCard);
 	void ShowPlayerHands(std::vector<std::vector<Card>> PlayerHands, int SelectedHand, std::vector<std::vector<int>> HandsValue);
 	void ShowBalance(int balance);
+	void SetSeed();
 };
 
