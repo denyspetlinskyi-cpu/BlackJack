@@ -49,6 +49,7 @@ private slots:
     void on_SetSeedButton_clicked();
 
 private:
+    void closeEvent(QCloseEvent* event) override;
     void CreateUI();
     void DrawCard(int x, int y, Card card, QWidget* parent);
     void AnimateCardAppearance(QLabel* cardLabel, int startX, int startY, int endX, int endY);

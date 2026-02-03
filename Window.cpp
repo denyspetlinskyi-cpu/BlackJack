@@ -148,6 +148,14 @@ Window::~Window()
     ClearCards();
 }
 
+void Window::closeEvent(QCloseEvent* event)
+{
+    if (bgMusic) {
+        bgMusic->stop();
+    }
+    QMainWindow::closeEvent(event);
+}
+
 void Window::CreateUI()
 {
     setWindowTitle("BlackJack Royal");
