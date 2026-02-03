@@ -3,10 +3,8 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
+	QApplication app(argc, argv);
 	BlackJack blackjack;
-    //Window window;
-    //window.show();
 	blackjack.startGame();
-    return app.exec();
+	return app.exec();
 }

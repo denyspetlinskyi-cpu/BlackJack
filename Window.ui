@@ -47,6 +47,9 @@
       <verstretch>0</verstretch>
      </sizepolicy>
     </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::Box</enum>
+    </property>
     <property name="text">
      <string/>
     </property>
@@ -77,6 +80,28 @@
      <string>PushButton</string>
     </property>
    </widget>
+   <widget class="QLabel" name="labelBalance">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>251</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::Box</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Raised</enum>
+    </property>
+    <property name="text">
+     <string>Баланс: 0</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -84,7 +109,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

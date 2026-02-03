@@ -1,5 +1,5 @@
 #include "BlackJack.h"
-
+#include "Window.h"
 
 const std::string rank[] = {
 	"2", "3", "4", "5", "6", "7",
@@ -10,126 +10,161 @@ const std::string master[] = {
 	"Hearts", "Diamonds", "Clubs", "Spades"
 };
 
-
 BlackJack::BlackJack()
 {
+	window = std::make_unique<Window>();
+	gameState = 0;
+	currentAction = 0;
 }
 
 BlackJack::~BlackJack()
 {
+	if (gameThread.joinable()) {
+		gameThread.join();
+	}
 }
 
 void BlackJack::startGame()
 {
-	//window.show();
+	window->show();
+	this->window->blackjack = this;
 	SetSeed();
-	while(game.money > 0) {
-		roundLoop();
-	}
+	gameThread = std::thread(&BlackJack::gameLoop, this);
 }
 
-void BlackJack::roundLoop(){
-	ShowBalance(game.GetBalance());
-	int bet = InputBetAmount();
-	if (game.GetBet(bet)) {
-		game.shuffleDeck();
+void BlackJack::gameLoop()
+{
+	roundLoop();
+}
+
+void BlackJack::roundLoop()
+{
+	while (game.money > 0) {
+		ShowBalance(game.GetBalance());
+
+		gameState = 0;
+		while (gameState == 0) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		}
+
 		game.DealInitialHands();
+		ShowDealerHand(game.GetDealerHand(), true);
+		ShowPlayerHands(game.GetPlayerHands());
 
-		std::vector<Card> dealerHand = game.GetDealerHand();
-		ShowDealerHand(dealerHand, true);
-		int SelectedHand = 0;
-		do {
-			std::vector<std::vector<Card>> playerHands = game.GetPlayerHands();
-			std::vector<std::vector<int>> handsValue = game.GetHandsValue();
-			ShowPlayerHands(playerHands, SelectedHand, handsValue);
-			int action = InputAction();
-			switch (action)
-			{
-				case 1:
-					game.hit();
-					break;
-				case 2:
-					game.stand();
-					break;
-				case 3:
-					if(IsDoubleDownAllowed)
-						game.doubleDown();
-					break;
-				case 4:
-					game.split(PerfectPairsSideBet);
-					break;
+		gameState = 1;
+		int selectedHand = 0;
+		while (selectedHand < game.PlayerHands.size()) {
+			currentAction = 0;
+			window->ShowHandValues(game.GetHandsValue());
+
+			while (currentAction == 0) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			}
-			SelectedHand = game.GetSelectedHand();
-		} while (SelectedHand < game.PlayerHands.size());
 
-		do {
-			dealerHand = game.GetDealerHand();
-			ShowDealerHand(dealerHand, false);
-			std::cout << game.GetDealerHandValue() << std::endl;
-		} while (game.DealerTakeCards());
+			switch (currentAction) {
+			case 1:
+				game.hit();
+				break;
+			case 2:
+				game.stand();
+				break;
+			case 3:
+				game.doubleDown();
+				break;
+			case 4:
+				game.split(PerfectPairsSideBet);
+				break;
+			}
+
+			ShowPlayerHands(game.GetPlayerHands());
+			selectedHand = game.GetSelectedHand();
+			std::this_thread::sleep_for(std::chrono::milliseconds(300));
+		}
+
+		gameState = 2;
+		while (game.DealerTakeCards()) {
+			ShowDealerHand(game.GetDealerHand(), false);
+			window->ShowDealerValue(game.GetDealerHandValue());
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		}
+		ShowDealerHand(game.GetDealerHand(), false);
+		window->ShowDealerValue(game.GetDealerHandValue());
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
 		game.CalculateResults(NaturalBlackjackpayout32);
+		ShowBalance(game.GetBalance());
+
+		gameState = 3;
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+	}
+
+}
+
+void BlackJack::PlaceBet(int betAmount)
+{
+	std::lock_guard<std::mutex> lock(gameMutex);
+	if (game.GetBet(betAmount)) {
+		gameState = 1;
 	}
 }
 
-int BlackJack::InputBetAmount()
+void BlackJack::Hit()
 {
-	int betAmount;
-	std::cin >> betAmount;
-	return betAmount;
+	if (gameState == 1) {
+		currentAction = 1;
+	}
 }
 
-int BlackJack::InputAction()
+void BlackJack::Stand()
 {
-	int action;
-	std::cin >> action;
-	return action;
+	if (gameState == 1) {
+		currentAction = 2;
+	}
+}
+
+void BlackJack::DoubleDown()
+{
+	if (gameState == 1) {
+		currentAction = 3;
+	}
+}
+
+void BlackJack::Split()
+{
+	if (gameState == 1) {
+		currentAction = 4;
+	}
 }
 
 void BlackJack::ShowDealerHand(std::vector<Card> DealerHand, bool HideSecondCard)
 {
-	std::cout << "Dealer hand: ";
-	std::cout << "{";
-	if (!HideSecondCard) {
-		for (const auto& card : DealerHand) {
-			std::cout << rank[card.value] << " " << master[card.suit] << ", ";
-		}
-	}
-	else {
-		std::cout << rank[DealerHand[0].value] << " " << master[DealerHand[0].suit] << ", ";
-		std::cout << "Hidden Card";
-	}
-	std::cout << "}" << std::endl;
+	window->SetDealerHand(DealerHand, HideSecondCard);
 }
 
-void BlackJack::ShowPlayerHands(std::vector<std::vector<Card>> PlayerHands, int SelectedHand, std::vector<std::vector<int>> HandsValue){
-	std::cout << "Selected Hand: " << game.selectedHand << std::endl;
-	std::cout << "Your hands: " << std::endl;
-	for (int hand = 0; hand < PlayerHands.size(); hand++) {
-		std::cout << "{";
-		for (const auto& card : PlayerHands[hand]) {
-			std::cout << rank[card.value] << " " << master[card.suit] << ", ";
-		}
-		std::cout << "} Values: ";
-		for (const auto& value : HandsValue[hand]) {
-			std::cout << value << " ";
-		}
-		std::cout << std::endl;
-	}
+void BlackJack::ShowPlayerHands(std::vector<std::vector<Card>> PlayerHands)
+{
+	window->SetPlayerHands(PlayerHands);
 }
 
-void BlackJack::ShowBalance(int balance){
-	std::cout << "Your money: " << balance << std::endl;
+void BlackJack::ShowBalance(int balance)
+{
+	window->SetBalance(balance);
+}
+
+void BlackJack::ShowGameOver(QString message)
+{
+	window->ShowGameOver(message);
 }
 
 void BlackJack::SetSeed()
 {
-	int typeOfSeed;
-	std::cin >> typeOfSeed;
-	if (typeOfSeed == 0) {
-		srand(time(0));
-		game.SetSeed(rand());
-	}
-	else
-		game.SetSeed(typeOfSeed);
+	srand(time(0));
+	game.SetSeed(rand());
+}
+
+void BlackJack::SetCustomSeed(int seed)
+{
+	srand(seed);
+	game.SetSeed(seed);
 }

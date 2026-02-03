@@ -37,7 +37,8 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>6.10.1_msvc2022_64</QtInstall>
-    <QtModules>core;gui;widgets</QtModules>
+    <QtModules>core;gui;widgets;multimedia
+</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
@@ -71,7 +72,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -92,16 +93,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BlackJack.cpp" />
+    <ClCompile Include="Window.cpp" />
     <QtRcc Include="Resource.qrc" />
     <QtRcc Include="Window.qrc" />
     <QtUic Include="Window.ui">
       <DeploymentContent>false</DeploymentContent>
     </QtUic>
     <QtMoc Include="Window.h" />
-    <ClCompile Include="BlackJack.cpp" />
     <ClCompile Include="Card.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Window.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>

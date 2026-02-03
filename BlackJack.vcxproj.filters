@@ -32,9 +32,6 @@
     <QtMoc Include="Window.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <ClCompile Include="Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <QtRcc Include="Resource.qrc">
       <Filter>Form Files</Filter>
     </QtRcc>
@@ -47,6 +44,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BlackJack.cpp">

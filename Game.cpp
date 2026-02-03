@@ -150,6 +150,7 @@ void Game::split(bool PerfectPairsSideBet){
 		if (money >= bets[selectedHand] && canPerfectPair) {
 			if (PlayerHands[selectedHand].size() == 2 && PlayerHands[selectedHand][0].value == PlayerHands[selectedHand][1].value) {
 				//bets.push_back(bets[selectedHand]);
+				money -= bets[selectedHand];
 				PerfectPairsSideBet = false;
 				//stand();
 				canDoubleDown = false;
